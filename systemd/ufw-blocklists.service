@@ -1,20 +1,29 @@
 # Описание unit-файла systemd.
 [Unit]
+
 # Человекочитаемое описание сервиса.
-Description=Refresh UFW SKIPA blocklist from CyberOK_Skipa_ips
+Description=Refresh UFW external blocklists
+
 # Запускать сервис только после того, как сеть считается поднятой.
 After=network-online.target
+
 # По возможности подтягивать network-online.target вместе с этим сервисом.
 Wants=network-online.target
 
+
 # Описание параметров самого сервиса.
 [Service]
+
 # Сервис однократный: он выполняет updater-скрипт и завершается.
 Type=oneshot
-# Основная команда сервиса: скачать свежий список и обновить managed-блок в /etc/ufw/before.rules.
-ExecStart=/usr/local/sbin/update-skipa-banlist.sh
+
+# Основная команда сервиса:
+# скачать свежие IPv4/IPv6 blocklists, обновить managed-блоки в UFW rules files и выполнить ufw reload.
+ExecStart=/usr/local/sbin/update-ufw-blocklists.sh
+
 
 # Описание секции установки unit-файла.
 [Install]
-# Сервис обычно стартует через timer, но его можно запускать и вручную.
+
+# Сервис обычно запускается через ufw-blocklists.timer, но его можно запускать и вручную.
 WantedBy=multi-user.target
